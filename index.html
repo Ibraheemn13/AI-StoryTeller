@@ -4,64 +4,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Storyteller for Kids</title>
+    <title>AI Storyteller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: url('assets/bg.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .title {
+            font-size: 2.9rem;
+            font-weight: 800;
+            color: white;
+            text-shadow:
+                -2px -2px 0 black,
+                2px -2px 0 black,
+                -2px 2px 0 black,
+                2px 2px 0 black;
+        }
+
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+            margin-top: 3rem;
+            gap: 1.5rem;
+        }
+
+        .btn-primary {
+            background-color: #f04e30;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #d03b25;
+            transform: scale(1.05);
+        }
+
+        .text-box {
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            background-color: white;
+            color: black;
+            text-align: center;
+            width: 100%;
+        }
+
+        .robot {
+            width: 120px;
+            position: absolute;
+            bottom: 5%;
+            right: 5%;
+        }
+
+        /* Loading Animation */
+        .loading-animation {
+            display: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 4px solid #f8c400;
+            border-top: 4px solid transparent;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
-<body>
-    <h1>AI Storyteller for Kids</h1>
-    <button id="record">Start Recording</button>
-    <button id="stop" disabled>Stop Recording</button>
+<body class="flex flex-col items-center text-white text-center">
 
-    <h3>Your Idea:</h3>
-    <p id="originalIdea">Speak something fun!</p>
+    <!-- Title at the top center -->
+    <h1 class="title mt-6">AI Storyteller</h1>
 
-    <h3>AI-Generated Story:</h3>
-    <p id="generatedStory">Story will appear here...</p>
+    <div class="container">
+        <!-- Speak Your Idea Button -->
+        <button id="record" class="btn-primary">
+            Speak Your Idea
+        </button>
 
-    <audio id="audioPlayer" controls style="display: none;"></audio>
+        <!-- Your Idea -->
+        <h3 class="text-2xl font-semibold">Your Idea:</h3>
+        <p id="originalIdea" class="text-box italic">
+            <span id="ideaText">Speak a fun adventure!</span>
+        <div id="loadingSpinner" class="loading-animation"></div>
+        </p>
+
+        <!-- Play/Pause Audio Controls -->
+        <audio id="audioPlayer" controls class="w-full hidden">
+            <source id="audioSource" src="" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
+        <!-- AI-Generated Story -->
+        <h3 class="text-2xl font-semibold">AI-Generated Story:</h3>
+        <p id="generatedStory" class="text-box">
+            Your magical story will appear here...
+        </p>
+    </div>
 
     <script>
         let mediaRecorder;
         let audioChunks = [];
+        const recordButton = document.getElementById("record");
+        const ideaText = document.getElementById("ideaText");
+        const loadingSpinner = document.getElementById("loadingSpinner");
+        const audioPlayer = document.getElementById("audioPlayer");
 
-        document.getElementById("record").addEventListener("click", async () => {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
+        recordButton.addEventListener("click", async () => {
+            if (recordButton.dataset.state === "recording") {
+                mediaRecorder.stop();
+                recordButton.dataset.state = "idle";
+                recordButton.innerText = "Speak Your Idea";
+                recordButton.style.backgroundColor = "#f04e30";
+                return;
+            }
 
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
 
-            mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                const formData = new FormData();
-                formData.append("file", audioBlob, "recording.wav");
+                audioChunks = [];
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
 
-                const response = await fetch("http://127.0.0.1:8000/transcribe/", {
-                    method: "POST",
-                    body: formData
-                });
+                mediaRecorder.onstop = async () => {
+                    // Show loading animation inside "Your Idea" box
+                    ideaText.style.display = "none";
+                    loadingSpinner.style.display = "block";
 
-                const result = await response.json();
-                document.getElementById("originalIdea").innerText = result.original_idea;
-                document.getElementById("generatedStory").innerText = result.generated_story;
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const formData = new FormData();
+                    formData.append("file", audioBlob, "recording.wav");
 
-                const audioPlayer = document.getElementById("audioPlayer");
-                audioPlayer.src = "http://127.0.0.1:8000/get_audio";
-                audioPlayer.style.display = "block";
-                audioPlayer.play();
-            };
+                    try {
+                        const response = await fetch("http://127.0.0.1:8000/transcribe/", {
+                            method: "POST",
+                            body: formData
+                        });
 
-            mediaRecorder.start();
-            document.getElementById("record").disabled = true;
-            document.getElementById("stop").disabled = false;
+                        const result = await response.json();
+                        ideaText.innerText = result.original_idea;
+                        document.getElementById("generatedStory").innerText = result.generated_story;
+
+                        // Show Play/Pause Audio Controls
+                        document.getElementById("audioSource").src = "http://127.0.0.1:8000/get_audio";
+                        audioPlayer.classList.remove("hidden");
+                        audioPlayer.load();
+                        audioPlayer.play();
+                    } catch (error) {
+                        console.error("Error:", error);
+                        ideaText.innerText = "Error processing story!";
+                    } finally {
+                        // Hide loading animation & show processed text
+                        loadingSpinner.style.display = "none";
+                        ideaText.style.display = "block";
+                    }
+                };
+
+                mediaRecorder.start();
+
+                // Change Button Text to "Stop Recording"
+                recordButton.dataset.state = "recording";
+                recordButton.innerText = "Stop Recording";
+                recordButton.style.backgroundColor = "#d03b25";
+            } catch (error) {
+                console.error("Error accessing microphone:", error);
+                alert("Microphone access denied! Please allow microphone permission.");
+            }
         });
 
-        document.getElementById("stop").addEventListener("click", () => {
-            mediaRecorder.stop();
-            document.getElementById("record").disabled = false;
-            document.getElementById("stop").disabled = true;
-        });
+        gsap.fromTo(".title", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 1.5 });
     </script>
 </body>
 

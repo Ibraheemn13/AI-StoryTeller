@@ -6,12 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 import requests
 from fastapi.responses import FileResponse
 from dotenv import load_dotenv
-import google.generativeai as genai  # Importing Google Gemini AI
+import google.generativeai as genai 
 
 # Load API keys securely from .env
 load_dotenv()
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")  # Gemini AI API Key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") 
 
 # ElevenLabs API settings
 ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1/text-to-speech"
@@ -47,6 +47,7 @@ async def transcribe_audio(file: UploadFile = File(...)):
         # Transcribe with Whisper
         result = model.transcribe(file_path)
         user_idea = result["text"]
+        print(user_idea)        
 
         # Generate a creative story with Gemini AI
         story = generate_story(user_idea)
