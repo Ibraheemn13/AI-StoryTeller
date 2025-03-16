@@ -1,32 +1,35 @@
-# AI-StoryTeller
-# AI Storyteller - README
+<a name="readme-top"></a>
 
-Welcome to **AI Storyteller**, a web application that allows children to **speak or type an idea**, generates a **creative story** using **Google Gemini AI**, and narrates it back using **ElevenLabs AI voice**. The interactive UI includes a **talking robot**, **playback controls**, and an **edit story option**.
+# 📖 AI Storyteller | Introduction
 
----
+**AI Storyteller** is a web application that allows children to **speak or type an idea**, generates a **creative story** using **Google Gemini AI**, and narrates it back using **ElevenLabs AI voice**. The interactive UI includes a **talking robot**, **playback controls**, and an **edit story option** to make storytelling fun and engaging!
 
-## Features
-✅ **Speech-to-Text**: Uses **Whisper AI** to transcribe spoken words  
-✅ **AI Story Generation**: Generates a fun story using **Google Gemini AI**  
-✅ **Text-to-Speech (TTS)**: Converts the story into **natural narration** using **ElevenLabs**  
-✅ **Interactive UI**: Play/pause controls, robot animations, and dynamic layout  
-✅ **Type & Edit Option**: Users can type their own idea and edit the generated story  
+#### Read More about it on MEDIUM: [Insert Medium Blog Link]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
 
-## Tech Stack
-- **Frontend**: HTML, Tailwind CSS, JavaScript  
-- **Backend**: FastAPI (Python)  
-- **AI Models**: Whisper AI, Google Gemini AI, ElevenLabs TTS  
-- **Hosting**: Local server 
+## 🛠️ AI Storyteller | Tools & Technology
+
+* <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
+* <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
+* <img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E" />
+* <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
+* <img src="https://img.shields.io/badge/Whisper_AI-000000?style=for-the-badge&logo=openai&logoColor=white" />
+* <img src="https://img.shields.io/badge/Google_Gemini_AI-4285F4?style=for-the-badge&logo=google&logoColor=white" />
+* <img src="https://img.shields.io/badge/ElevenLabs-E63946?style=for-the-badge&logo=ai&logoColor=white" />
+* <img src="https://img.shields.io/badge/Vercel-000?logo=vercel&logoColor=fff&style=for-the-badge" />
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
 
-## How to Install & Run the Project Locally
+## 🚀 AI Storyteller | Installation & Running Locally
 
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/ibraheemn13/AI-Storyteller.git
+git clone https://github.com/your-repo/AI-Storyteller.git
 cd AI-Storyteller
 ```
 
@@ -34,7 +37,7 @@ cd AI-Storyteller
 ```sh
 python -m venv venv
 source venv/bin/activate  # For Mac/Linux
-venv\Scripts\activate      # For Windows
+venv\Scripts\activate    # For Windows
 ```
 
 ### 3️⃣ Install Dependencies
@@ -42,17 +45,11 @@ venv\Scripts\activate      # For Windows
 pip install -r requirements.txt
 ```
 
-### 4️⃣ Get API Keys
-To use **Google Gemini AI** and **ElevenLabs**, get API keys:  
-- **Google Gemini AI**: [Get API Key](https://ai.google.dev)  
-- **ElevenLabs**: [Get API Key](https://elevenlabs.io)  
-- **Whisper AI**: No API key needed, but ensure **ffmpeg** is installed.
-
-Add these API keys to a `.env` file:  
+### 4️⃣ Set Up API Keys
+Create a `.env` file and add the following keys:
 ```sh
 GEMINI_API_KEY=your_gemini_api_key
 ELEVENLABS_API_KEY=your_elevenlabs_api_key
-ELEVENLABS_VOICE_ID=your_selected_voice_id
 ```
 
 ### 5️⃣ Run the Backend Server
@@ -63,63 +60,47 @@ uvicorn main:app --reload
 - Visit **`http://127.0.0.1:8000/docs`** for API testing  
 
 ### 6️⃣ Run the Frontend
-Just open `index.html` in a web browser!  
+Simply **open `index.html` in a browser**.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
 
-## How to Use
-1️⃣ Click **"Speak Your Idea"** and start talking  
-2️⃣ AI generates a **story & narration**  
-3️⃣ Play the story **using the play button**  
-4️⃣ Enjoy the **story**
+## 📜 AI Storyteller | API Endpoints
 
----
-
-## API Endpoints
 | **Method** | **Endpoint** | **Description** |
 |------------|-------------|----------------|
 | `POST` | `/transcribe/` | Transcribes speech or accepts typed input |
 | `POST` | `/generate_story/` | Uses Gemini AI to create a story |
-| `POST` | `/synthesize_speech/` | Converts text to speech (ElevenLabs) |
+| `POST` | `/generate_speech/` | Converts text to speech (ElevenLabs) |
 | `GET` | `/get_audio` | Fetches generated audio for playback |
 
----
-
-## Customization
-- **Change AI Voices**: Update **ELEVENLABS_VOICE_ID** in `.env`  
-- **Modify UI Design**: Edit **index.html & styles.css**  
-- **Deploy to Cloud**: Use **AWS, Heroku, Render, or Vercel**  
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
 
-## Troubleshooting
-**Microphone Not Working?**  
- Ensure browser **allows microphone access**  
+## 🤝 AI Storyteller | Contributing
 
-**Voice Not Found (ElevenLabs Error)?**  
- **Check voice ID** in `.env` and ensure **ElevenLabs API key is correct**  
+Contributions are what make open-source projects amazing! If you have suggestions to improve this project, feel free to fork the repo and submit a pull request.
 
-**Whisper AI Not Running?**  
- Install **ffmpeg**:  
-```sh
-pip install ffmpeg-python
-```
+1. Fork the Project
+2. Create your Feature Branch `git checkout -b feature/AmazingFeature`
+3. Commit your Changes `git commit -m 'Add some AmazingFeature'`
+4. Push to the Branch `git push origin feature/AmazingFeature`
+5. Open a Pull Request
 
-**Backend Not Starting?**  
- Check if **Uvicorn is installed**:
-```sh
-pip install uvicorn
-```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
 
-## 🌟 Contributors
-👨‍💻 Developed by **[Muhammad Ibraheem Noor]**  
-💬 Feel free to contribute by **forking the repo & making PRs!**  
+## 🎬 AI Storyteller | DEMO
+[![Watch the Demo](https://img.youtube.com/vi/v7Tz4T-Tfqc/0.jpg)](https://youtu.be/v7Tz4T-Tfqc)
+
+  
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
-
-## 📜 License
-📝 **MIT License** - Feel free to modify and use this project!  
-
----
+<p align="center"> © 2025 Muhammad Ibraheem Noor, All Rights Reserved. </p>
+<p align="center">
+https://github.com/Ibraheemn13
+</p>
