@@ -6,13 +6,19 @@ from fastapi.middleware.cors import CORSMiddleware
 import requests
 from fastapi.responses import FileResponse
 from dotenv import load_dotenv
+import google.generativeai as genai  # Importing Google Gemini AI
 
-# Load API key securely from .env
+# Load API keys securely from .env
 load_dotenv()
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")  # Gemini AI API Key
 
+# ElevenLabs API settings
 ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1/text-to-speech"
-VOICE_ID = "EXAVITQu4vr4xnSDxMaL"  # Rachel's voice ID (you can change it)
+VOICE_ID = "EXAVITQu4vr4xnSDxMaL"  # Rachel's voice ID
+
+# Initialize Gemini AI
+genai.configure(api_key=GEMINI_API_KEY)
 
 # Initialize FastAPI
 app = FastAPI()
@@ -40,15 +46,19 @@ async def transcribe_audio(file: UploadFile = File(...)):
     try:
         # Transcribe with Whisper
         result = model.transcribe(file_path)
-        text = result["text"]
-        
-        # Generate speech using ElevenLabs API
-        audio_path = generate_speech(text)
+        user_idea = result["text"]
+
+        # Generate a creative story with Gemini AI
+        story = generate_story(user_idea)
+
+        # Convert story to speech using ElevenLabs
+        audio_path = generate_speech(story)
         if not audio_path:
             raise HTTPException(status_code=500, detail="Failed to generate speech.")
 
         return {
-            "transcription": text,
+            "original_idea": user_idea,
+            "generated_story": story,
             "audio_url": "/get_audio"
         }
     finally:
@@ -60,8 +70,20 @@ async def get_audio():
     """Serve the generated audio file."""
     return FileResponse("story_audio.mp3", media_type="audio/mpeg", filename="story.mp3")
 
+def generate_story(user_idea):
+    """Generates a fun story for kids using Google's Gemini AI."""
+    model = genai.GenerativeModel("gemini-1.5-pro")
+    prompt = f"Create a short, fun story for kids based on this idea: {user_idea}. Make it engaging, magical, and fun!"
+
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        print("Error generating story:", str(e))
+        return "Once upon a time, in a magical land, an exciting adventure began!"
+
 def generate_speech(text):
-    """Uses ElevenLabs API to generate speech and save as an MP3 file."""
+    """Converts text into speech using ElevenLabs API."""
     headers = {
         "Content-Type": "application/json",
         "xi-api-key": ELEVENLABS_API_KEY

@@ -4,15 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Storyteller</title>
+    <title>AI Storyteller for Kids</title>
 </head>
 
 <body>
-    <h1>Record & Transcribe Audio</h1>
+    <h1>AI Storyteller for Kids</h1>
     <button id="record">Start Recording</button>
     <button id="stop" disabled>Stop Recording</button>
-    <p id="transcription">Transcription will appear here...</p>
-    <p id="error-message" style="color: red;"></p>
+
+    <h3>Your Idea:</h3>
+    <p id="originalIdea">Speak something fun!</p>
+
+    <h3>AI-Generated Story:</h3>
+    <p id="generatedStory">Story will appear here...</p>
+
     <audio id="audioPlayer" controls style="display: none;"></audio>
 
     <script>
@@ -32,32 +37,19 @@
                 const formData = new FormData();
                 formData.append("file", audioBlob, "recording.wav");
 
-                // Reset messages
-                document.getElementById("error-message").innerText = "Processing...";
-                document.getElementById("transcription").innerText = "";
+                const response = await fetch("http://127.0.0.1:8000/transcribe/", {
+                    method: "POST",
+                    body: formData
+                });
 
-                try {
-                    // Send audio to backend for transcription & speech synthesis
-                    const response = await fetch("http://127.0.0.1:8000/transcribe/", {
-                        method: "POST",
-                        body: formData
-                    });
+                const result = await response.json();
+                document.getElementById("originalIdea").innerText = result.original_idea;
+                document.getElementById("generatedStory").innerText = result.generated_story;
 
-                    if (!response.ok) {
-                        throw new Error("Error processing audio");
-                    }
-
-                    const result = await response.json();
-                    document.getElementById("transcription").innerText = result.transcription;
-
-                    // Play AI-generated narration
-                    const audioPlayer = document.getElementById("audioPlayer");
-                    audioPlayer.src = "http://127.0.0.1:8000/get_audio";
-                    audioPlayer.style.display = "block";
-                    audioPlayer.play();
-                } catch (error) {
-                    document.getElementById("error-message").innerText = "Error: " + error.message;
-                }
+                const audioPlayer = document.getElementById("audioPlayer");
+                audioPlayer.src = "http://127.0.0.1:8000/get_audio";
+                audioPlayer.style.display = "block";
+                audioPlayer.play();
             };
 
             mediaRecorder.start();
