@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Speech to Text AI</title>
+</head>
+
+<body>
+    <h1>Record & Transcribe Audio</h1>
+    <button id="record">Start Recording</button>
+    <button id="stop" disabled>Stop Recording</button>
+    <p id="transcription">Transcription will appear here...</p>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+
+        document.getElementById("record").addEventListener("click", async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const formData = new FormData();
+                formData.append("file", audioBlob, "recording.wav");
+
+                // Send audio to backend for transcription
+                const response = await fetch("http://127.0.0.1:8000/transcribe/", {
+                    method: "POST",
+                    body: formData
+                });
+                const result = await response.json();
+                document.getElementById("transcription").innerText = result.transcription;
+            };
+
+            mediaRecorder.start();
+            document.getElementById("record").disabled = true;
+            document.getElementById("stop").disabled = false;
+        });
+
+        document.getElementById("stop").addEventListener("click", () => {
+            mediaRecorder.stop();
+            document.getElementById("record").disabled = false;
+            document.getElementById("stop").disabled = true;
+        });
+    </script>
+</body>
+
+</html>
