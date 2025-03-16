@@ -29,8 +29,8 @@
 
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/your-repo/AI-Storyteller.git
-cd AI-Storyteller
+git clone https://github.com/your-repo/AI-StoryTeller.git
+cd AI-StoryTeller
 ```
 
 ### 2️⃣ Set Up a Virtual Environment
