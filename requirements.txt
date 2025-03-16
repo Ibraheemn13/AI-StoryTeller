@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+whisper
+requests
+elevenlabs
+python-dotenv
+google-generativeai
+tailwindcss
+ffmpeg-python
+pydantic
+websockets
+httpx
+typing_extensions
